@@ -6,6 +6,11 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		D19A6F662EADA3F800F051FD /* Alamofire in Frameworks */ = {isa = PBXBuildFile; productRef = D19A6F652EADA3F800F051FD /* Alamofire */; };
+		D19A70C72EADAA9A00F051FD /* JWTDecode in Frameworks */ = {isa = PBXBuildFile; productRef = D19A70C62EADAA9A00F051FD /* JWTDecode */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXContainerItemProxy section */
 		D1A930A72EACF3C100CEB39C /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -52,6 +57,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D19A70C72EADAA9A00F051FD /* JWTDecode in Frameworks */,
+				D19A6F662EADA3F800F051FD /* Alamofire in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -112,6 +119,8 @@
 			);
 			name = hackathon_ios_smart_medical_report;
 			packageProductDependencies = (
+				D19A6F652EADA3F800F051FD /* Alamofire */,
+				D19A70C62EADAA9A00F051FD /* JWTDecode */,
 			);
 			productName = hackathon_ios_smart_medical_report;
 			productReference = D1A930992EACF3C000CEB39C /* hackathon_ios_smart_medical_report.app */;
@@ -195,6 +204,10 @@
 			);
 			mainGroup = D1A930902EACF3C000CEB39C;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				D19A6F642EADA3F800F051FD /* XCRemoteSwiftPackageReference "Alamofire" */,
+				D19A70C52EADAA9A00F051FD /* XCRemoteSwiftPackageReference "JWTDecode.swift" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = D1A9309A2EACF3C000CEB39C /* Products */;
 			projectDirPath = "";
@@ -398,6 +411,9 @@
 				ENABLE_PREVIEWS = YES;
 				ENABLE_USER_SELECTED_FILES = readonly;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "hackathon-ios-smart-medical-report-Info.plist";
+				INFOPLIST_KEY_NSMicrophoneUsageDescription = "Este app usa o microfone para gravar sua voz";
+				INFOPLIST_KEY_NSSpeechRecognitionUsageDescription = "Este app usa reconhecimento de fala para transcrever sua voz";
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphoneos*]" = YES;
@@ -413,7 +429,7 @@
 				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = "@executable_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 26.0;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = "VoxBible.hackathon-ios-smart-medical-report";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.hackathon-ios-smart-medical-report";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				REGISTER_APP_GROUPS = YES;
 				SDKROOT = auto;
@@ -442,6 +458,9 @@
 				ENABLE_PREVIEWS = YES;
 				ENABLE_USER_SELECTED_FILES = readonly;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "hackathon-ios-smart-medical-report-Info.plist";
+				INFOPLIST_KEY_NSMicrophoneUsageDescription = "Este app usa o microfone para gravar sua voz";
+				INFOPLIST_KEY_NSSpeechRecognitionUsageDescription = "Este app usa reconhecimento de fala para transcrever sua voz";
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphoneos*]" = YES;
@@ -457,7 +476,7 @@
 				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = "@executable_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 26.0;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = "VoxBible.hackathon-ios-smart-medical-report";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.hackathon-ios-smart-medical-report";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				REGISTER_APP_GROUPS = YES;
 				SDKROOT = auto;
@@ -615,6 +634,38 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		D19A6F642EADA3F800F051FD /* XCRemoteSwiftPackageReference "Alamofire" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/Alamofire/Alamofire";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 5.10.2;
+			};
+		};
+		D19A70C52EADAA9A00F051FD /* XCRemoteSwiftPackageReference "JWTDecode.swift" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/auth0/JWTDecode.swift.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 3.3.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		D19A6F652EADA3F800F051FD /* Alamofire */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = D19A6F642EADA3F800F051FD /* XCRemoteSwiftPackageReference "Alamofire" */;
+			productName = Alamofire;
+		};
+		D19A70C62EADAA9A00F051FD /* JWTDecode */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = D19A70C52EADAA9A00F051FD /* XCRemoteSwiftPackageReference "JWTDecode.swift" */;
+			productName = JWTDecode;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = D1A930912EACF3C000CEB39C /* Project object */;
 }
