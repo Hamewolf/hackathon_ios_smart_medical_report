@@ -8,6 +8,7 @@
 import SwiftUI
 import Speech
 import AVFoundation
+import UIKit
 
 struct VoiceGptView: View {
     //MARK: - PROPERTIES
@@ -15,7 +16,7 @@ struct VoiceGptView: View {
     var reportType: String
     
     // Chave fixa (ideal mover para armazenamento seguro / secrets em produção)
-    @State private var apiKey: String = "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"
+    @State private var apiKey: String = ""
     
     // Reconhecimento de voz
     @State private var speechAuthStatus: SFSpeechRecognizerAuthorizationStatus = .notDetermined
@@ -51,7 +52,52 @@ struct VoiceGptView: View {
     @State private var toastMessage: String = ""
     @State private var isErrorToast: Bool = false
     
+    @State private var isSharePresented: Bool = false
+    @State private var sharedFileURL: URL? = nil
+    
     @Environment(\.dismiss) private var dismiss
+    
+    // MARK: - PDF Sharing
+    private func shareSamplePDF() {
+        let urlString = "https://www.thecampusqdl.com/uploads/files/pdf_sample_2.pdf"
+        downloadPDF(toFilename: "arquivo.pdf", from: urlString) { result in
+            switch result {
+            case .success(let fileURL):
+                DispatchQueue.main.async {
+                    self.sharedFileURL = fileURL
+                    self.isSharePresented = true
+                }
+            case .failure(let error):
+                DispatchQueue.main.async {
+                    self.isErrorToast = true
+                    Helper.showToast(isPresented: $showToast, text: $toastMessage, "Falha ao preparar PDF: \(error.localizedDescription)", isError: isErrorToast)
+                }
+            }
+        }
+    }
+    
+    private func downloadPDF(toFilename filename: String, from urlString: String, completion: @escaping (Result<URL, Error>) -> Void) {
+        guard let url = URL(string: urlString) else {
+            completion(.failure(NSError(domain: "VoiceGptView", code: -1, userInfo: [NSLocalizedDescriptionKey: "URL inválida"])));
+            return
+        }
+        let task = URLSession.shared.dataTask(with: url) { data, response, error in
+            if let error = error { completion(.failure(error)); return }
+            guard let http = response as? HTTPURLResponse, (200...299).contains(http.statusCode), let data = data, !data.isEmpty else {
+                completion(.failure(NSError(domain: "VoiceGptView", code: -2, userInfo: [NSLocalizedDescriptionKey: "Resposta inválida do servidor"])));
+                return
+            }
+            do {
+                let docs = try FileManager.default.url(for: .documentDirectory, in: .userDomainMask, appropriateFor: nil, create: true)
+                let fileURL = docs.appendingPathComponent(filename)
+                try data.write(to: fileURL, options: .atomic)
+                completion(.success(fileURL))
+            } catch {
+                completion(.failure(error))
+            }
+        }
+        task.resume()
+    }
     
     //MARK: - FUNCTIONS
     
@@ -421,6 +467,15 @@ extension VoiceGptView {
                                         .frame(maxWidth: .infinity)
                                         .background(.thinMaterial, in: Capsule())
                                 }
+                                
+                                Button {
+                                    shareSamplePDF()
+                                } label: {
+                                    Text("Compartilhar PDF")
+                                        .frame(height: 35)
+                                        .frame(maxWidth: .infinity)
+                                        .background(.thinMaterial, in: Capsule())
+                                }
                             }
                             .padding(.trailing, 20)
                             .padding(.bottom, 28)
@@ -456,5 +511,27 @@ extension VoiceGptView {
                 }
             }
         }
+        .sheet(isPresented: $isSharePresented) {
+            if let fileURL = sharedFileURL {
+                ActivityView(activityItems: [fileURL])
+                    .presentationDetents([.medium, .large])
+            } else {
+                Text("Nada para compartilhar")
+                    .padding()
+            }
+        }
     }
+}
+
+// Wrapper para UIActivityViewController
+struct ActivityView: UIViewControllerRepresentable {
+    var activityItems: [Any]
+    var applicationActivities: [UIActivity]? = nil
+
+    func makeUIViewController(context: Context) -> UIActivityViewController {
+        let controller = UIActivityViewController(activityItems: activityItems, applicationActivities: applicationActivities)
+        return controller
+    }
+
+    func updateUIViewController(_ uiViewController: UIActivityViewController, context: Context) {}
 }

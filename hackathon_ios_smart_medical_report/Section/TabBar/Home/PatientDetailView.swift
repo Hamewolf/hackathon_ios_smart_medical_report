@@ -38,6 +38,8 @@ struct PatientDetailView: View {
     @State private var showToast: Bool = false
     @State private var toastMessage: String = ""
     @State private var isErrorToast: Bool = false
+
+    @State private var exportInProgress: Bool = false
     
     // MARK: - Helpers
     private var formattedBirthDate: String {
@@ -138,6 +140,65 @@ struct PatientDetailView: View {
                 Helper.showToast(isPresented: $showToast, text: $toastMessage, response.erroMessage, isError: isErrorToast)
             }
         }
+    }
+    
+    // MARK: - PDF Export
+    private func exportSamplePDF() {
+        downloadAndSavePDF(urlString: "https://www.thecampusqdl.com/uploads/files/pdf_sample_2.pdf")
+    }
+
+    private func downloadAndSavePDF(urlString: String) {
+        guard let url = URL(string: urlString) else {
+            isErrorToast = true
+            Helper.showToast(isPresented: $showToast, text: $toastMessage, "URL inválida.", isError: isErrorToast)
+            return
+        }
+        exportInProgress = true
+
+        // Download the data
+        let task = URLSession.shared.dataTask(with: url) { data, response, error in
+            DispatchQueue.main.async {
+                exportInProgress = false
+            }
+
+            if let error = error {
+                DispatchQueue.main.async {
+                    isErrorToast = true
+                    Helper.showToast(isPresented: $showToast, text: $toastMessage, "Falha ao baixar PDF: \(error.localizedDescription)", isError: isErrorToast)
+                }
+                return
+            }
+
+            guard let http = response as? HTTPURLResponse, (200...299).contains(http.statusCode), let data = data, !data.isEmpty else {
+                DispatchQueue.main.async {
+                    isErrorToast = true
+                    Helper.showToast(isPresented: $showToast, text: $toastMessage, "Resposta inválida do servidor.", isError: isErrorToast)
+                }
+                return
+            }
+
+            // Save to Documents directory with a timestamped filename
+            let fileManager = FileManager.default
+            do {
+                let docsURL = try fileManager.url(for: .documentDirectory, in: .userDomainMask, appropriateFor: nil, create: true)
+                let formatter = DateFormatter()
+                formatter.dateFormat = "yyyyMMdd_HHmmss"
+                let filename = "Relatorio_\(formatter.string(from: Date())).pdf"
+                let destination = docsURL.appendingPathComponent(filename)
+                try data.write(to: destination, options: .atomic)
+
+                DispatchQueue.main.async {
+                    isErrorToast = false
+                    Helper.showToast(isPresented: $showToast, text: $toastMessage, "PDF exportado em Documentos: \(filename)", isError: isErrorToast)
+                }
+            } catch {
+                DispatchQueue.main.async {
+                    isErrorToast = true
+                    Helper.showToast(isPresented: $showToast, text: $toastMessage, "Não foi possível salvar o PDF: \(error.localizedDescription)", isError: isErrorToast)
+                }
+            }
+        }
+        task.resume()
     }
     
     //MARK: - BODY
@@ -261,7 +322,14 @@ struct PatientDetailView: View {
                                     }
                                 } else {
                                     cellPatientStruct(name: r.exam_type, date: dateStr, result: result, conclusions: conclusions, observations: observations, isPending: false)
-                                        .contextMenu(forSelectionType: <#T##Hashable.Type#>, menu: <#T##(Set<Hashable>) -> View#>)
+                                        .contextMenu {
+                                            Button {
+                                                exportSamplePDF()
+                                            } label: {
+                                                Label(exportInProgress ? "Exportando…" : "Exportar PDF", systemImage: exportInProgress ? "hourglass" : "square.and.arrow.down")
+                                            }
+                                            .disabled(exportInProgress)
+                                        }
                                 }
                             }
                         }
